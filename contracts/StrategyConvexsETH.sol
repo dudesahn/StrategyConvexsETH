@@ -465,6 +465,7 @@ contract StrategyConvexsETH is BaseStrategy {
         uint256 maxSupply = 100 * 1000000 * 1e18; // 100mil
         uint256 reductionPerCliff = 100000000000000000000000; // 100,000
         uint256 supply = convexToken.totalSupply();
+        uint256 mintableCvx = 0;
 
         uint256 cliff = supply.div(reductionPerCliff);
         //mint if below total cliffs
@@ -472,7 +473,7 @@ contract StrategyConvexsETH is BaseStrategy {
             //for reduction% take inverse of current cliff
             uint256 reduction = totalCliffs.sub(cliff);
             //reduce
-            uint256 mintableCvx = claimableCrv.mul(reduction).div(totalCliffs);
+            mintableCvx = claimableCrv.mul(reduction).div(totalCliffs);
 
             //supply cap check
             uint256 amtTillMax = maxSupply.sub(supply);
