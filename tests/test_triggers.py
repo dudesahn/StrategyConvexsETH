@@ -9,7 +9,7 @@ def test_triggers(gov, token, vault, dudesahn, strategist, whale, strategy, chai
     strategy.setTendsPerHarvest(3, {"from": gov})
     startingWhale = token.balanceOf(whale)
     token.approve(vault, 2 ** 256 - 1, {"from": whale})
-    vault.deposit(100e18, {"from": whale})
+    vault.deposit(100000e18, {"from": whale})
     newWhale = token.balanceOf(whale)
     starting_assets = vault.totalAssets()
 
