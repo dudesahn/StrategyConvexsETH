@@ -178,7 +178,7 @@ contract StrategyConvexsETH is BaseStrategy {
             uint256 crvRemainder = crvBalance.sub(_keepCRV);
 
             _sellCrv(crvRemainder);
-            _sellConvex(convexBalance);
+            if (convexBalance > 0) _sellConvex(convexBalance);
 
             uint256 ethBalance = address(this).balance;
             if (ethBalance > 0) {
@@ -254,7 +254,7 @@ contract StrategyConvexsETH is BaseStrategy {
                 uint256 crvRemainder = crvBalance.sub(_keepCRV);
 
                 _sellCrv(crvRemainder);
-                _sellConvex(convexBalance);
+                if (convexBalance > 0) _sellConvex(convexBalance);
                 // increase our tend counter by 1 so we can know when we should harvest again
                 uint256 previousTendCounter = tendCounter;
                 tendCounter = previousTendCounter.add(1);
@@ -304,7 +304,7 @@ contract StrategyConvexsETH is BaseStrategy {
 
     // Sells our harvested CVX into the selected output (ETH).
     function _sellConvex(uint256 _convexAmount) internal {
-        IUniswapV2Router02(crvRouter).swapExactTokensForETH(
+        IUniswapV2Router02(cvxRouter).swapExactTokensForETH(
             _convexAmount,
             uint256(0),
             convexTokenPath,
