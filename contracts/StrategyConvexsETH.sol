@@ -465,7 +465,7 @@ contract StrategyConvexsETH is BaseStrategy {
         uint256 maxSupply = 100 * 1000000 * 1e18; // 100mil
         uint256 reductionPerCliff = 100000000000000000000000; // 100,000
         uint256 supply = convexToken.totalSupply();
-        uint256 mintableCvx = 0;
+        uint256 mintableCvx;
 
         uint256 cliff = supply.div(reductionPerCliff);
         //mint if below total cliffs
@@ -481,22 +481,23 @@ contract StrategyConvexsETH is BaseStrategy {
                 mintableCvx = amtTillMax;
             }
         }
+        uint256 crvValue;
+        if (claimableCrv > 0) {
+        	uint256[] memory crvSwap =
+            	IUniswapV2Router02(crvRouter).getAmountsOut(claimableCrv, crvPath);
+        	crvValue = crvSwap[1];
+        }
 
-        uint256[] memory crvSwap =
-            IUniswapV2Router02(crvRouter).getAmountsOut(claimableCrv, crvPath);
-        uint256 crvValue = crvSwap[2];
-
-        uint256 cvxValue = 0;
-
+        uint256 cvxValue;
         if (mintableCvx > 0) {
             uint256[] memory cvxSwap =
                 IUniswapV2Router02(cvxRouter).getAmountsOut(
                     mintableCvx,
                     convexTokenPath
                 );
-            cvxValue = cvxSwap[2];
+            cvxValue = cvxSwap[1];
         }
-        return crvValue.add(cvxValue); // dollar value of our harvest
+        return (crvValue.add(cvxValue)).mul(ethToDollaBill(1e18).div(1e18)); // dollar value of our harvest
     }
 
     // set number of tends before we call our next harvest
