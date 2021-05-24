@@ -286,8 +286,8 @@ contract StrategyConvexsETH is BaseStrategy {
                 _loss = debt.sub(assets);
             }
         } else {
-          // we have enough balance to cover the liquidation available
-          return (_amountNeeded, 0);
+            // we have enough balance to cover the liquidation available
+            return (_amountNeeded, 0);
         }
     }
 
@@ -406,7 +406,7 @@ contract StrategyConvexsETH is BaseStrategy {
 
         // check if it makes sense to send funds from vault to strategy
         uint256 credit = vault.creditAvailable();
-        return (profitFactor.mul(callCost) < credit.add(profit));
+        if (profitFactor.mul(callCost) < credit.add(profit)) return true;
 
         // calculate how much profit we'll make if we harvest
         uint256 harvestProfit = claimableProfitInDolla();
@@ -483,10 +483,7 @@ contract StrategyConvexsETH is BaseStrategy {
         }
 
         uint256[] memory crvSwap =
-            IUniswapV2Router02(crvRouter).getAmountsOut(
-                claimableCrv,
-                crvPath
-            );
+            IUniswapV2Router02(crvRouter).getAmountsOut(claimableCrv, crvPath);
         uint256 crvValue = crvSwap[2];
 
         uint256 cvxValue = 0;
@@ -498,7 +495,7 @@ contract StrategyConvexsETH is BaseStrategy {
                     convexTokenPath
                 );
             cvxValue = cvxSwap[2];
-            }
+        }
         return crvValue.add(cvxValue); // dollar value of our harvest
     }
 
