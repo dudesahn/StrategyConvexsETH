@@ -350,7 +350,7 @@ contract StrategyConvexsETH is BaseStrategy {
         override
         returns (address[] memory)
     {
-        address[] memory protected = new address[](5);
+        address[] memory protected = new address[](2);
         protected[0] = address(convexToken);
         protected[1] = address(crv);
 
