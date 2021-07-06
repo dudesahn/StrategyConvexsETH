@@ -285,8 +285,10 @@ contract StrategyConvexsETH is BaseStrategy {
                 uint256 debt = vault.strategies(address(this)).totalDebt;
                 _loss = debt.sub(assets);
             }
+            require(_liquidatedAmount + _loss == _amountNeeded);
         } else {
             // we have enough balance to cover the liquidation available
+            require(_liquidatedAmount + _loss == _amountNeeded);
             return (_amountNeeded, 0);
         }
     }
@@ -483,9 +485,12 @@ contract StrategyConvexsETH is BaseStrategy {
         }
         uint256 crvValue;
         if (claimableCrv > 0) {
-        	uint256[] memory crvSwap =
-            	IUniswapV2Router02(crvRouter).getAmountsOut(claimableCrv, crvPath);
-        	crvValue = crvSwap[1];
+            uint256[] memory crvSwap =
+                IUniswapV2Router02(crvRouter).getAmountsOut(
+                    claimableCrv,
+                    crvPath
+                );
+            crvValue = crvSwap[1];
         }
 
         uint256 cvxValue;
