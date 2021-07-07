@@ -36,7 +36,6 @@ def test_migration(gov, token, vault, dudesahn, strategist, whale, strategy, cha
     
     # Test out our migrated strategy, confirm we're making a profit
     new_strategy.harvest({"from": dudesahn})
-    assert new_strategy.tendCounter() == 0
     vaultAssets_2 = vault.totalAssets()
     assert vaultAssets_2 > startingVault
     print("\nAssets after 1 day harvest: ", vaultAssets_2)

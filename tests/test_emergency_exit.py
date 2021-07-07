@@ -94,7 +94,7 @@ def test_emergency_withdraw_method_1(gov, token, vault, dudesahn, strategist, wh
     
     
 def test_emergency_shutdown_from_vault(
-    gov, token, vault, whale, strategy, chain, dudesahn
+    gov, token, vault, whale, strategy, chain, dudesahn, rewardsContract
 ):
     ## deposit to the vault after approving
     startingWhale = token.balanceOf(whale)
