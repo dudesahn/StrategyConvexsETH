@@ -4,7 +4,7 @@ from brownie import config
 
 # test passes as of 21-06-26
 def test_remove_from_withdrawal_queue(
-    gov, token, vault, whale, strategy, chain,
+    gov, token, vault, whale, strategy, chain, dudesahn
 ):
     ## deposit to the vault after approving
     startingWhale = token.balanceOf(whale)

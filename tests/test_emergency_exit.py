@@ -51,8 +51,7 @@ def test_emergency_withdraw_method_0(gov, token, vault, dudesahn, strategist, wh
 
     # set emergency exit so no funds will go back to strategy, and we assume that deposit contract is borked so we go through staking contract
     # here we assume that the swap out to curve pool tokens is borked, so we stay in cvx vault tokens and send to gov
-    # we also assume extra rewards are fine, so we will collect them on harvest and withdrawal
-    strategy.setHarvestExtras(True, {"from": gov})
+    # we also assume extra rewards are fine, so we will collect them on withdrawal
     strategy.setClaimRewards(True, {"from": gov})
     strategy.setEmergencyExit({"from": gov})
     
@@ -80,8 +79,7 @@ def test_emergency_withdraw_method_1(gov, token, vault, dudesahn, strategist, wh
 
     # set emergency exit so no funds will go back to strategy, and we assume that deposit contract is borked so we go through staking contract
     # here we assume that the swap out to curve pool tokens is borked, so we stay in cvx vault tokens and send to gov
-    # we also assume extra rewards are borked so we don't want them when harvesting or withdrawing
-    strategy.setHarvestExtras(False, {"from": gov})
+    # we also assume extra rewards are borked so we don't want them when withdrawing
     strategy.setClaimRewards(False, {"from": gov})
     strategy.setEmergencyExit({"from": gov})
     
@@ -96,7 +94,7 @@ def test_emergency_withdraw_method_1(gov, token, vault, dudesahn, strategist, wh
     
     
 def test_emergency_shutdown_from_vault(
-    gov, token, vault, whale, strategy, chain
+    gov, token, vault, whale, strategy, chain, dudesahn
 ):
     ## deposit to the vault after approving
     startingWhale = token.balanceOf(whale)

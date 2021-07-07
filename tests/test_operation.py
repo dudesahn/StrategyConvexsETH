@@ -10,13 +10,6 @@ def test_operation(gov, token, vault, dudesahn, strategist, whale, strategy, cha
     vault.deposit(100e18, {"from": whale})
     newWhale = token.balanceOf(whale)
     starting_assets = vault.totalAssets()
-        
-    # tend our strategy 
-    strategy.tend({"from": dudesahn})
-    
-    # simulate a day of earnings
-    chain.sleep(86400)
-    chain.mine(1)
 
     # harvest, store asset amount
     strategy.harvest({"from": dudesahn})
