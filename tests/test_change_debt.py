@@ -33,4 +33,4 @@ def test_change_debt(gov, token, vault, dudesahn, strategist, whale, strategy, c
     
     # withdraw and confirm we made money
     vault.withdraw({"from": whale})    
-    assert token.balanceOf(whale) > startingWhale 
+    assert token.balanceOf(whale) >= startingWhale 

@@ -93,3 +93,39 @@ def test_emergency_withdraw_method_1(gov, token, vault, dudesahn, strategist, wh
 
     strategy.sweep(cvxsETHDeposit, {"from": gov})
     assert cvxsETHDeposit.balanceOf(gov) > 0
+    
+    
+def test_emergency_shutdown_from_vault(
+    gov, token, vault, whale, strategy, chain
+):
+    ## deposit to the vault after approving
+    startingWhale = token.balanceOf(whale)
+    token.approve(vault, 2 ** 256 - 1, {"from": whale})
+    vault.deposit(100e18, {"from": whale})
+    strategy.harvest({"from": dudesahn})
+
+    # simulate a day of earnings
+    chain.sleep(86400)
+    chain.mine(1)
+    earned_crv = rewardsContract.earned(strategy)/1e18
+    print("CRV Earned and waiting to be claimed:", earned_crv)
+    assert earned_crv > 0
+    strategy.harvest({"from": dudesahn})
+
+    # simulate a day of earnings
+    chain.sleep(86400)
+    chain.mine(1)
+
+    # set emergency and exit, then confirm that the strategy has no funds
+    vault.setEmergencyShutdown(True, {"from": gov})
+    strategy.harvest({"from": gov})
+    assert strategy.estimatedTotalAssets() == 0
+    assert staking.balanceOf(strategy, token) == 0
+
+    # simulate a day of waiting for share price to bump back up
+    chain.sleep(86400)
+    chain.mine(1)
+
+    # withdraw and confirm we made money
+    vault.withdraw({"from": whale})
+    assert token.balanceOf(whale) >= startingWhale
