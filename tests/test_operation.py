@@ -29,11 +29,11 @@ def test_operation(gov, token, vault, dudesahn, strategist, whale, strategy, cha
 
     # Display estimated APR based on the past month
     print("\nEstimated APR: ", "{:.2%}".format(((new_assets - old_assets) * 365) / (strategy.estimatedTotalAssets())))
-    
+
     # simulate a day of earnings
     chain.sleep(86400)
     chain.mine(1)
-    
+
     # test to make sure our strategy is selling convex properly. send it some from our whale.
     cvx.transfer(strategy, 1000e18, {"from": convexWhale})
     strategy.harvest({"from": dudesahn})
@@ -41,12 +41,14 @@ def test_operation(gov, token, vault, dudesahn, strategist, whale, strategy, cha
     assert new_assets_from_convex_sale > new_assets
 
     # Display estimated APR based on the past day
-    print("\nEstimated CVX Donation APR: ", "{:.2%}".format(((new_assets_from_convex_sale - new_assets) * 365) / (strategy.estimatedTotalAssets())))
+    print(
+        "\nEstimated CVX Donation APR: ", "{:.2%}".format(((new_assets_from_convex_sale - new_assets) * 365) / (strategy.estimatedTotalAssets()))
+    )
 
     # simulate a day of waiting for share price to bump back up
     chain.sleep(86400)
     chain.mine(1)
-    
+
     # withdraw and confirm we made money
-    vault.withdraw({"from": whale})    
-    assert token.balanceOf(whale) > startingWhale 
+    vault.withdraw({"from": whale})
+    assert token.balanceOf(whale) > startingWhale

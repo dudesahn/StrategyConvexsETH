@@ -61,13 +61,16 @@ contract StrategyConvexsETH is BaseStrategy {
 
     ICurveFi public constant curve =
         ICurveFi(0xc5424B857f758E906013F3555Dad202e4bdB4567); // Curve sETH Pool, need this for buying more pool tokens
-    address public constant sushiswapRouter = 0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F; // default to sushiswap, more CRV liquidity there
+    address public constant sushiswapRouter =
+        0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F; // default to sushiswap, more CRV liquidity there
     address public constant voter = 0xF147b8125d2ef93FB6965Db97D6746952a133934; // Yearn's veCRV voter, we send some extra CRV here
     address[] public crvPath; // path to sell CRV
     address[] public convexTokenPath; // path to sell CVX
 
-    address public constant depositContract = 0xF403C135812408BFbE8713b5A23a04b3D48AAE31; // this is the deposit contract that all pools use, aka booster
-    address public constant rewardsContract = 0x192469CadE297D6B21F418cFA8c366b63FFC9f9b; // This is unique to each curve pool, this one is for sETH pool
+    address public constant depositContract =
+        0xF403C135812408BFbE8713b5A23a04b3D48AAE31; // this is the deposit contract that all pools use, aka booster
+    address public constant rewardsContract =
+        0x192469CadE297D6B21F418cFA8c366b63FFC9f9b; // This is unique to each curve pool, this one is for sETH pool
     uint256 public constant pid = 23; // this is unique to each pool, this is the one for sETH, aka eCRV
 
     // Swap stuff
@@ -140,10 +143,7 @@ contract StrategyConvexsETH is BaseStrategy {
         if (stakedTokens > 0 && claimableTokens > 0) {
             // this claims our CRV, CVX, and any extra tokens like SNX or ANKR
             // if for some reason we don't want extra rewards, make sure we don't harvest them
-            IConvexRewards(rewardsContract).getReward(
-                address(this),
-                false
-            );
+            IConvexRewards(rewardsContract).getReward(address(this), false);
 
             uint256 crvBalance = crv.balanceOf(address(this));
             uint256 convexBalance = convexToken.balanceOf(address(this));
@@ -160,7 +160,7 @@ contract StrategyConvexsETH is BaseStrategy {
                 curve.add_liquidity{value: ethBalance}([ethBalance, 0], 0);
             }
         }
-        
+
         // serious loss should never happen, but if it does (for instance, if Curve is hacked), let's record it accurately
         uint256 assets = estimatedTotalAssets();
         uint256 debt = vault.strategies(address(this)).totalDebt;
@@ -180,7 +180,10 @@ contract StrategyConvexsETH is BaseStrategy {
                 claimRewards
             );
 
-            _debtPayment = Math.min(_debtOutstanding, want.balanceOf(address(this)));
+            _debtPayment = Math.min(
+                _debtOutstanding,
+                want.balanceOf(address(this))
+            );
             // want to make sure we report losses properly here
             if (_debtPayment < _debtOutstanding) {
                 _loss = _loss.add(_debtOutstanding.sub(_debtPayment));
@@ -219,7 +222,6 @@ contract StrategyConvexsETH is BaseStrategy {
             _liquidatedAmount = Math.min(_amountNeeded, withdrawnBal);
 
             _loss = _amountNeeded.sub(_liquidatedAmount);
-            
         } else {
             // we have enough balance to cover the liquidation available
             return (_amountNeeded, 0);
@@ -339,20 +341,20 @@ contract StrategyConvexsETH is BaseStrategy {
     }
 
     // convert our keeper's eth cost into dai
-    function ethToDai(uint256 _ethAmount)
-        internal
-        view
-        returns (uint256)
-    {
+    function ethToDai(uint256 _ethAmount) internal view returns (uint256) {
         if (_ethAmount > 0) {
             address[] memory ethPath = new address[](2);
-        	ethPath[0] = address(weth);
-        	ethPath[1] = address(dai);
-        	uint256[] memory callCostInDai = IUniswapV2Router02(sushiswapRouter).getAmountsOut(_ethAmount, ethPath);
-        	
-        	return callCostInDai[callCostInDai.length - 1];
+            ethPath[0] = address(weth);
+            ethPath[1] = address(dai);
+            uint256[] memory callCostInDai =
+                IUniswapV2Router02(sushiswapRouter).getAmountsOut(
+                    _ethAmount,
+                    ethPath
+                );
+
+            return callCostInDai[callCostInDai.length - 1];
         } else {
-        	return 0;
+            return 0;
         }
     }
 

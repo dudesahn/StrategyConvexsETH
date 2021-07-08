@@ -13,7 +13,7 @@ def test_emergency_exit(gov, token, vault, dudesahn, strategist, whale, strategy
     # simulate a day of earnings
     chain.sleep(86400)
     chain.mine(1)
-    earned_crv = rewardsContract.earned(strategy)/1e18
+    earned_crv = rewardsContract.earned(strategy) / 1e18
     print("CRV Earned and waiting to be claimed:", earned_crv)
     assert earned_crv > 0
     strategy.harvest({"from": dudesahn})
@@ -32,12 +32,15 @@ def test_emergency_exit(gov, token, vault, dudesahn, strategist, whale, strategy
     # simulate a day of waiting for share price to bump back up
     chain.sleep(86400)
     chain.mine(1)
-    
+
     # withdraw and confirm we made money
-    vault.withdraw({"from": whale})    
-    assert token.balanceOf(whale) > startingWhale 
-    
-def test_emergency_withdraw_method_0(gov, token, vault, dudesahn, strategist, whale, strategy, chain, strategist_ms, rewardsContract, StrategyConvexsETH, cvxsETHDeposit):
+    vault.withdraw({"from": whale})
+    assert token.balanceOf(whale) > startingWhale
+
+
+def test_emergency_withdraw_method_0(
+    gov, token, vault, dudesahn, strategist, whale, strategy, chain, strategist_ms, rewardsContract, StrategyConvexsETH, cvxsETHDeposit
+):
     ## deposit to the vault after approving
     startingWhale = token.balanceOf(whale)
     token.approve(vault, 2 ** 256 - 1, {"from": whale})
@@ -53,19 +56,21 @@ def test_emergency_withdraw_method_0(gov, token, vault, dudesahn, strategist, wh
     # we also assume extra rewards are fine, so we will collect them on withdrawal
     strategy.setClaimRewards(True, {"from": gov})
     strategy.setEmergencyExit({"from": gov})
-    
+
     strategy.withdrawToConvexDepositTokens({"from": dudesahn})
     strategy.harvest({"from": dudesahn})
     assert strategy.estimatedTotalAssets() == 0
     assert rewardsContract.balanceOf(strategy) == 0
     assert cvxsETHDeposit.balanceOf(strategy) > 0
-    
+
     # sweep this from the strategy with gov and wait until we can figure out how to unwrap them
-    strategy.sweep(cvxsETHDeposit, {"from": gov}) 
+    strategy.sweep(cvxsETHDeposit, {"from": gov})
     assert cvxsETHDeposit.balanceOf(gov) > 0
 
 
-def test_emergency_withdraw_method_1(gov, token, vault, dudesahn, strategist, whale, strategy, chain, strategist_ms, rewardsContract, StrategyConvexsETH, cvxsETHDeposit):
+def test_emergency_withdraw_method_1(
+    gov, token, vault, dudesahn, strategist, whale, strategy, chain, strategist_ms, rewardsContract, StrategyConvexsETH, cvxsETHDeposit
+):
     ## deposit to the vault after approving
     startingWhale = token.balanceOf(whale)
     token.approve(vault, 2 ** 256 - 1, {"from": whale})
@@ -81,7 +86,7 @@ def test_emergency_withdraw_method_1(gov, token, vault, dudesahn, strategist, wh
     # we also assume extra rewards are borked so we don't want them when withdrawing
     strategy.setClaimRewards(False, {"from": gov})
     strategy.setEmergencyExit({"from": gov})
-    
+
     strategy.withdrawToConvexDepositTokens({"from": dudesahn})
     strategy.harvest({"from": dudesahn})
     assert strategy.estimatedTotalAssets() == 0
@@ -90,11 +95,9 @@ def test_emergency_withdraw_method_1(gov, token, vault, dudesahn, strategist, wh
 
     strategy.sweep(cvxsETHDeposit, {"from": gov})
     assert cvxsETHDeposit.balanceOf(gov) > 0
-    
-    
-def test_emergency_shutdown_from_vault(
-    gov, token, vault, whale, strategy, chain, dudesahn, rewardsContract
-):
+
+
+def test_emergency_shutdown_from_vault(gov, token, vault, whale, strategy, chain, dudesahn, rewardsContract):
     ## deposit to the vault after approving
     startingWhale = token.balanceOf(whale)
     token.approve(vault, 2 ** 256 - 1, {"from": whale})
@@ -104,7 +107,7 @@ def test_emergency_shutdown_from_vault(
     # simulate a day of earnings
     chain.sleep(86400)
     chain.mine(1)
-    earned_crv = rewardsContract.earned(strategy)/1e18
+    earned_crv = rewardsContract.earned(strategy) / 1e18
     print("CRV Earned and waiting to be claimed:", earned_crv)
     assert earned_crv > 0
     strategy.harvest({"from": dudesahn})
