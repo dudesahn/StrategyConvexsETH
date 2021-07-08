@@ -3,7 +3,7 @@ from brownie import Contract
 from brownie import config
 
 # test passes as of 21-05-20
-def test_operation(gov, token, vault, dudesahn, strategist, whale, strategy, chain, strategist_ms, rewardsContract, cvx, convexWhale, curveVoterProxyStrategy):
+def test_operation(gov, token, vault, dudesahn, strategist, whale, strategy, chain, strategist_ms, rewardsContract, cvx, convexWhale):
     ## deposit to the vault after approving
     startingWhale = token.balanceOf(whale)
     token.approve(vault, 2 ** 256 - 1, {"from": whale})
@@ -14,8 +14,8 @@ def test_operation(gov, token, vault, dudesahn, strategist, whale, strategy, cha
     # harvest, store asset amount
     strategy.harvest({"from": dudesahn})
     # tx.call_trace(True)
-    old_assets_dai = vault.totalAssets()
-    assert old_assets_dai >= starting_assets
+    old_assets = vault.totalAssets()
+    assert old_assets >= starting_assets
 
     # simulate a day of earnings
     chain.sleep(86400)
@@ -24,11 +24,11 @@ def test_operation(gov, token, vault, dudesahn, strategist, whale, strategy, cha
     # harvest after a day, store new asset amount
     tx = strategy.harvest({"from": dudesahn})
     # tx.call_trace(True)
-    new_assets_dai = vault.totalAssets()
-    assert new_assets_dai > old_assets_dai
+    new_assets = vault.totalAssets()
+    assert new_assets > old_assets
 
     # Display estimated APR based on the past month
-    print("\nEstimated DAI APR: ", "{:.2%}".format(((new_assets_dai - old_assets_dai) * 365) / (strategy.estimatedTotalAssets())))
+    print("\nEstimated APR: ", "{:.2%}".format(((new_assets - old_assets) * 365) / (strategy.estimatedTotalAssets())))
     
     # simulate a day of earnings
     chain.sleep(86400)
@@ -38,13 +38,12 @@ def test_operation(gov, token, vault, dudesahn, strategist, whale, strategy, cha
     cvx.transfer(strategy, 1000e18, {"from": convexWhale})
     strategy.harvest({"from": dudesahn})
     new_assets_from_convex_sale = vault.totalAssets()
-    assert new_assets_from_convex_sale > new_assets_dai
+    assert new_assets_from_convex_sale > new_assets
 
     # Display estimated APR based on the past day
-    print("\nEstimated CVX Donation APR: ", "{:.2%}".format(((new_assets_from_convex_sale - new_assets_dai) * 365) / (strategy.estimatedTotalAssets())))
+    print("\nEstimated CVX Donation APR: ", "{:.2%}".format(((new_assets_from_convex_sale - new_assets) * 365) / (strategy.estimatedTotalAssets())))
 
     # simulate a day of waiting for share price to bump back up
-    curveVoterProxyStrategy.harvest({"from": gov})
     chain.sleep(86400)
     chain.mine(1)
     

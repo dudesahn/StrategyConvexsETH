@@ -118,7 +118,6 @@ def test_emergency_shutdown_from_vault(
     vault.setEmergencyShutdown(True, {"from": gov})
     strategy.harvest({"from": gov})
     assert strategy.estimatedTotalAssets() == 0
-    assert staking.balanceOf(strategy, token) == 0
 
     # simulate a day of waiting for share price to bump back up
     chain.sleep(86400)

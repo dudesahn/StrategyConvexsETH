@@ -17,16 +17,21 @@ def test_triggers(gov, token, vault, dudesahn, strategist, whale, strategy, chai
     chain.mine(1)
 
     # harvest should trigger false
-    tx = strategy.harvestTrigger(0, {"from": gov})
+    tx = strategy.harvestTrigger(10e18, {"from": gov})
     print("\nShould we harvest? Should be False.", tx)
     assert tx == False
+    
+    # harvest should trigger true
+    tx = strategy.harvestTrigger(0, {"from": gov})
+    print("\nShould we harvest? Should be True.", tx)
+    assert tx == True
 
     # simulate eight days of earnings
     chain.sleep(86400 * 8)
     chain.mine(1)
 
     # harvest should trigger true
-    tx = strategy.harvestTrigger(0, {"from": gov})
+    tx = strategy.harvestTrigger(10e18, {"from": gov})
     print("\nShould we harvest? Should be true.", tx)
     strategy.harvest({"from": gov})
     assert tx == True
