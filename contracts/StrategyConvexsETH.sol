@@ -186,7 +186,7 @@ contract StrategyConvexsETH is BaseStrategy {
             );
             // want to make sure we report losses properly here
             if (_debtPayment < _debtOutstanding) {
-                _loss = _loss.add(_debtOutstanding.sub(_debtPayment));
+                _loss = _debtOutstanding.sub(_debtPayment);
                 _profit = 0;
             }
         }
