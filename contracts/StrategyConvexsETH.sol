@@ -136,11 +136,9 @@ contract StrategyConvexsETH is BaseStrategy {
         )
     {
         // if we have anything staked, then harvest CRV and CVX from the rewards contract
-        uint256 stakedTokens =
-            IConvexRewards(rewardsContract).balanceOf(address(this));
         uint256 claimableTokens =
             IConvexRewards(rewardsContract).earned(address(this));
-        if (stakedTokens > 0 && claimableTokens > 0) {
+        if (claimableTokens > 0) {
             // this claims our CRV, CVX, and any extra tokens like SNX or ANKR
             // if for some reason we don't want extra rewards, make sure we don't harvest them
             IConvexRewards(rewardsContract).getReward(address(this), false);
@@ -175,6 +173,8 @@ contract StrategyConvexsETH is BaseStrategy {
 
         // debtOustanding will only be > 0 in the event of revoking or lowering debtRatio of a strategy
         if (_debtOutstanding > 0) {
+            uint256 stakedTokens =
+                IConvexRewards(rewardsContract).balanceOf(address(this));
             IConvexRewards(rewardsContract).withdrawAndUnwrap(
                 Math.min(stakedTokens, _debtOutstanding),
                 claimRewards
