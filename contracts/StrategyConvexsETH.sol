@@ -279,16 +279,9 @@ contract StrategyConvexsETH is BaseStrategy {
             uint256 withdrawnBal = want.balanceOf(address(this));
             _liquidatedAmount = Math.min(_amountNeeded, withdrawnBal);
 
-            // if _amountNeeded != withdrawnBal, then we have an error
-            if (_amountNeeded != withdrawnBal) {
-                uint256 assets = estimatedTotalAssets();
-                uint256 debt = vault.strategies(address(this)).totalDebt;
-                _loss = debt.sub(assets);
-            }
-            require(_liquidatedAmount + _loss == _amountNeeded);
+            _loss = _amountNeeded.sub(_liquidatedAmount);
         } else {
             // we have enough balance to cover the liquidation available
-            require(_liquidatedAmount + _loss == _amountNeeded);
             return (_amountNeeded, 0);
         }
     }
@@ -526,7 +519,7 @@ contract StrategyConvexsETH is BaseStrategy {
     // These functions are useful for setting parameters of the strategy that may need to be adjusted.
 
     // Set the amount of CRV to be locked in Yearn's veCRV voter from each harvest. Default is 10%.
-    function setKeepCRV(uint256 _keepCRV) external onlyGovernance {
+    function setKeepCRV(uint256 _keepCRV) external onlyAuthorized {
         keepCRV = _keepCRV;
     }
 
